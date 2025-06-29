@@ -10,7 +10,7 @@ This project constructs a semantically rich OWL ontology from the ATProto codeba
 * Extract semantic descriptions from Go comments (godoc format)
 * Emit OWL ontologies using meaningful IRIs, labels, and descriptions
 * Infer correct datatypes (XSD) and structural relationships (OWL object/data properties)
-* Optionally emit SHACL or PROV metadata
+* Emit  PROV metadata
 * Reconcile IRIs with resolvable links when possible (e.g., Go pkg links or godoc URLs)
 
 ---
@@ -27,7 +27,7 @@ This project constructs a semantically rich OWL ontology from the ATProto codeba
 | `RdfWriterAgent`  | Emits TTL/RDF/XML from intermediate model using OWL-compliant formatting                    |
 | `TypeInferAgent`  | Maps Go and Lex types to XSD/OWL types, supports optionality and multiplicity               |
 | `PrefixAgent`     | Registers and emits consistent namespace prefixes (e.g., `bsky`, `actor`, `xsd`, `owl`)     |
-| `ProvenanceAgent` | (Optional) Attaches provenance metadata (e.g., extracted from comments or repo commits)     |
+| `ProvenanceAgent` | Attaches provenance metadata (e.g., extracted from comments or repo commits)                |
 | `ValidationAgent` | Ensures output TTL complies with OWL 2 DL and passes RDF validators (e.g., Protégé, riot)   |
 | `DocServeAgent`   | Optionally generates human-facing HTML documentation from the ontology                      |
 
