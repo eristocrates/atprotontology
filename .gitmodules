@@ -1,0 +1,6 @@
+[submodule "indigo"]
+	path = indigo
+	url = https://github.com/eristocrates/indigo
+[submodule "atproto"]
+	path = atproto
+	url = https://github.com/eristocrates/atproto
