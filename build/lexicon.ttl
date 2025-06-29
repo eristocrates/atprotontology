@@ -1,0 +1,20 @@
+<https://atproto.social/ontology/verificationState> a owl:Class .
+<https://atproto.social/ontology/verificationState> rdfs:comment "Represents the verification information about the user this object is attached to." .
+<https://atproto.social/ontology/verificationState/verifications> a owl:DatatypeProperty .
+<https://atproto.social/ontology/verificationState/verifications> rdfs:domain <https://atproto.social/ontology/verificationState> .
+<https://atproto.social/ontology/verificationState/verifications> rdfs:range owl:Thing .
+<https://atproto.social/ontology/verificationState/verifications> rdfs:comment "All verifications issued by trusted verifiers on behalf of this user. Verifications by untrusted verifiers are not included." .
+<https://atproto.social/ontology/verificationState/verifiedStatus> a owl:DatatypeProperty .
+<https://atproto.social/ontology/verificationState/verifiedStatus> rdfs:domain <https://atproto.social/ontology/verificationState> .
+<https://atproto.social/ontology/verificationState/verifiedStatus> rdfs:range xsd:string .
+<https://atproto.social/ontology/verificationState/verifiedStatus> rdfs:comment "The user's status as a verified account." .
+<https://atproto.social/ontology/verificationState/trustedVerifierStatus> a owl:DatatypeProperty .
+<https://atproto.social/ontology/verificationState/trustedVerifierStatus> rdfs:domain <https://atproto.social/ontology/verificationState> .
+<https://atproto.social/ontology/verificationState/trustedVerifierStatus> rdfs:range xsd:string .
+<https://atproto.social/ontology/verificationState/trustedVerifierStatus> rdfs:comment "The user's status as a trusted verifier." .
+<https://atproto.social/ontology/verificationView> a owl:Class .
+<https://atproto.social/ontology/verificationView> rdfs:comment "View for a single verification." .
+<https://atproto.social/ontology/verificationView/id> a owl:DatatypeProperty .
+<https://atproto.social/ontology/verificationView/id> rdfs:domain <https://atproto.social/ontology/verificationView> .
+<https://atproto.social/ontology/verificationView/id> rdfs:range xsd:string .
+<https://atproto.social/ontology/verificationView/id> rdfs:comment "ID of the verification." .
