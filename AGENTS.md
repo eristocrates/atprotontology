@@ -1,81 +1,74 @@
-## ✅ `AGENTS.md` — Project: ATProto Ontology Reflection System
 
-This project constructs a semantically rich OWL ontology from the ATProto codebase, using source code, inline documentation (e.g., godoc), and lexicon definitions. The ontology will serve both as a machine-readable API model and as a basis for automated reasoning, alignment, and semantic services.
+## ✅ `AGENTS.md` — Project: ATProto Semantic Mining Pipeline
 
----
+This system semantically mines the ATProto source code, documentation, and lexicons to generate a unified OWL ontology. The pipeline follows an **Extract–Transform–Lift** (ETL) model:
 
-### 🧠 Core Goals
-
-* Parse Lexicon JSON and Go struct definitions
-* Extract semantic descriptions from Go comments (godoc format)
-* Emit OWL ontologies using meaningful IRIs, labels, and descriptions
-* Infer correct datatypes (XSD) and structural relationships (OWL object/data properties)
-* Optionally emit SHACL or PROV metadata
-* Reconcile IRIs with resolvable links when possible (e.g., Go pkg links or godoc URLs)
+* **Extract** code structure, comments, and type metadata
+* **Transform** into intermediate semantic representations
+* **Lift** into OWL individuals, classes, and properties with resolvable IRIs and proper prefixing
 
 ---
 
-### 📦 AGENT ROSTER
+### 🧠 Core Philosophy
 
-| Agent Name        | Responsibility                                                                              |
-| ----------------- | ------------------------------------------------------------------------------------------- |
-| `MainAgent`       | Entry in `main.go` to route control via flags (e.g., `--emit-ontology`, `--doc-reflection`) |
-| `LexSchemaAgent`  | Parses Lexicon JSON files and emits `owl:Class`/`owl:Property` triples                      |
-| `GoReflectAgent`  | Parses Go structs and field comments; aligns with lexicon types using naming conventions    |
-| `GodocAgent`      | Extracts structured documentation (e.g., via AST or comment parsing)                        |
-| `IRIMapperAgent`  | Creates canonical IRIs, handles prefixing, and attempts resolvable documentation links      |
-| `RdfWriterAgent`  | Emits TTL/RDF/XML from intermediate model using OWL-compliant formatting                    |
-| `TypeInferAgent`  | Maps Go and Lex types to XSD/OWL types, supports optionality and multiplicity               |
-| `PrefixAgent`     | Registers and emits consistent namespace prefixes (e.g., `bsky`, `actor`, `xsd`, `owl`)     |
-| `ProvenanceAgent` | (Optional) Attaches provenance metadata (e.g., extracted from comments or repo commits)     |
-| `ValidationAgent` | Ensures output TTL complies with OWL 2 DL and passes RDF validators (e.g., Protégé, riot)   |
-| `DocServeAgent`   | Optionally generates human-facing HTML documentation from the ontology                      |
+* Code *is* documentation: Go structs, JSON schemas, and godoc are all semantic input
+* Output must be **semantically fused**, not layered or parallel
+* IRI structure must be **shortened via prefixes** and **resolvable** when possible
+* Knowledge extraction is **ongoing and extensible**, enabling later enrichment from other sources
 
 ---
 
-### 🗂️ Input Corpus
+### 📦 AGENT ROSTER (ETL-Based)
 
-* `indigo/api/bsky/*.go`: Go source code with structs and field comments
-* `indigo/lex/*.json`: ATProto Lexicon JSON schemas
-* `references/owl`: W3C OWL and XSD specs
-* `references/rdf`: RDF and RDFS specs
-* `references/prov`: W3C PROV specifications
-* `references/atproto`: Static mirror of the ATProto site (optional linking target)
-
----
-
-### 🧾 IRI and Prefix Conventions
-
-* Ontology base: `https://atproto.social/ontology/`
-* Default IRI pattern:
-  `:VerificationState` → `https://atproto.social/ontology/app.bsky.actor.defs#VerificationState`
-  `:verifiedStatus` → `...#VerificationState/verifiedStatus`
-* Use godoc URL when resolvable:
-  `https://pkg.go.dev/github.com/bluesky-social/indigo/api/bsky#ActorDefs_VerificationState`
+| Agent Name            | Responsibility                                                                 |
+| --------------------- | ------------------------------------------------------------------------------ |
+| `ExtractionAgent`     | Parses lexicon JSON and Go structs; extracts type structure and doc comments   |
+| `SemanticIndexAgent`  | Builds a central semantic map of all known terms, fields, types, and comments  |
+| `TypeMapperAgent`     | Infers OWL types and XSD datatypes for each field or property                  |
+| `PrefixAgent`         | Generates CURIEs from long IRIs; manages consistent prefix registration        |
+| `IRIAgent`            | Constructs resolvable or canonical IRIs for every term; aligns with godoc URLs |
+| `EnrichmentAgent`     | Attaches `rdfs:label`, `rdfs:comment`, `skos:definition` from godoc and schema |
+| `OntologyWriterAgent` | Emits fully prefixed TTL/RDF/XML files with clear ontology partitioning        |
+| `ProvenanceAgent`     | (Optional) Adds provenance from file paths, repo commits, or comment origins   |
+| `ValidationAgent`     | Validates output against OWL 2 DL and Turtle syntax using riot or Jena         |
 
 ---
 
-### 🧠 Ontological Semantics
+### 🧱 Prefix and IRI Strategy
 
-| Code Construct     | Ontology Construct                             |
-| ------------------ | ---------------------------------------------- |
-| Go struct          | `owl:Class`                                    |
-| Go field           | `owl:ObjectProperty` or `owl:DatatypeProperty` |
-| JSON type `ref`    | `owl:ObjectProperty`                           |
-| JSON type `string` | `xsd:string`                                   |
-| Field doc comment  | `rdfs:comment`                                 |
-| Field requiredness | OWL cardinality restrictions                   |
-| Naming path        | Class local name, IRI suffix                   |
+* Base ontology IRI: `https://atproto.social/ontology/`
+* CURIEs like:
 
----
+  * `actor:labelersPref/labelers`
+  * `actor:VerificationState`
+  * `bsky:ViewerState`
+* Prefixes:
 
-### 🧪 Deliverables
+  * `xsd:` → `http://www.w3.org/2001/XMLSchema#`
+  * `owl:` → `http://www.w3.org/2002/07/owl#`
+  * `rdfs:` → `http://www.w3.org/2000/01/rdf-schema#`
+  * `actor:` → `https://atproto.social/ontology/app.bsky.actor.defs#`
 
-* `build/lexicon.ttl`: complete ontology with full lexical and structural semantics
-* Optional SHACL or JSON-LD context files
-* `prefixes.ttl`: prefix map (auto-generated or curated)
-* `iri-map.tsv`: crosswalk of Go doc links ↔ ontology IRIs
-* `doc/index.html`: human-readable OWL doc (optional)
+Prefix mappings emitted to `prefixes.ttl`.
 
 ---
 
+### 🔁 Example Transformation
+
+**Go Field + Lexicon:**
+
+```go
+// The user's status as a verified account.
+VerifiedStatus *string `json:"verifiedStatus,omitempty"`
+```
+
+Yields:
+
+```ttl
+actor:VerificationState/verifiedStatus
+    a             owl:DatatypeProperty ;
+    rdfs:label    "verifiedStatus" ;
+    rdfs:comment  "The user's status as a verified account." ;
+    rdfs:domain   actor:VerificationState ;
+    rdfs:range    xsd:string .
+```
